@@ -11,5 +11,8 @@ import lombok.Setter;
 public class Room {
     private int roomNumber;
     private int roomFor;
-    private RoomType type;
+    private int floor;
+    private float pricePerNight;
+    private String bedSize;
+    private boolean hasInternetAccess;
 }
