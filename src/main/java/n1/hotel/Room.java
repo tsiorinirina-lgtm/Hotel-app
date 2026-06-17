@@ -15,4 +15,5 @@ public class Room {
     private float pricePerNight;
     private String bedSize;
     private boolean hasInternetAccess;
+    private boolean isAvailable;
 }
