@@ -10,6 +10,6 @@ import lombok.Setter;
 
 public class Room {
     private int roomNumber;
-    private int roomFor;
-    private RoomType type;
+    private int maxPeopleInRoom;
+    private float price;
 }
