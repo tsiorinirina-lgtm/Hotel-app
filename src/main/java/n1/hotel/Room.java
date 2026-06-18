@@ -13,6 +13,6 @@ public class Room {
     private int roomFor;
     private int floor;
     private float pricePerNight;
-    private String bedSize;
+    private BedSize bedSize;
     private boolean hasInternetAccess;
 }
