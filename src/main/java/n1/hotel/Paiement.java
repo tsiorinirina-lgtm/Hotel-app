@@ -1,7 +1,14 @@
-package main.java.n1.hotel;
+package n1.hotel;
+
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+@EqualsAndHashCode
+@Getter
 
 public class Paiement {
     public enum StatutPaiement {
@@ -14,6 +21,7 @@ public class Paiement {
     private final String idPaiement;
     private double montant;
     private double montantPaye;
+    @Setter
     private ModePaiement modePaiement;
     private StatutPaiement statut;
     private LocalDateTime datePaiement;
@@ -66,38 +74,9 @@ public class Paiement {
         return statut == StatutPaiement.VALIDE;
     }
 
-    public String getIdPaiement()            { return idPaiement; }
-    public double getMontant()               { return montant; }
-    public double getMontantPaye()           { return montantPaye; }
-    public ModePaiement getModePaiement()    { return modePaiement; }
-    public StatutPaiement getStatut()        { return statut; }
-    public LocalDateTime getDatePaiement()   { return datePaiement; }
-    public String getReferenceTransaction()  { return referenceTransaction; }
-
     public void setMontant(double montant) {
         if (statut == StatutPaiement.VALIDE) throw new IllegalStateException("Impossible to modify a validated payment.");
         if (montant <= 0) throw new IllegalArgumentException("The amount must be positive.");
         this.montant = montant;
     }
-
-    public void setModePaiement(ModePaiement modePaiement) { this.modePaiement = modePaiement; }
-
-    @Override
-    public String toString() {
-        return String.format(
-            "Paiement[id=%s | montant=%.2f€ | payé=%.2f€ | mode=%s | statut=%s | date=%s]",
-            idPaiement, montant, montantPaye, modePaiement, statut,
-            datePaiement != null ? datePaiement.toString() : "—"
-        );
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Paiement)) return false;
-        return this.idPaiement.equals(((Paiement) o).idPaiement);
-    }
-
-    @Override
-    public int hashCode() { return idPaiement.hashCode(); }
 }
