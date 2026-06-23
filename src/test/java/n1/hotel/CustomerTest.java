@@ -99,4 +99,35 @@ class CustomerBookHotelTest {
         assertThrows(IllegalStateException.class, () -> customer.bookHotel(hotel, 50.0),
                 "Aucune chambre ne correspond à ce budget maximum.");
     }
+
+    @Test
+    @DisplayName("Forme 5 : bookHotel(Hotel, BedSize) - Doit réserver une chambre avec un lit assez grand")
+    void testBookHotelByBedSize_Success() {
+        var queenSize = new BedSize("Queen", 2.0f, 1.6f);
+        var kingSize = new BedSize("King", 2.0f, 2.0f);
+
+        room1.setBedSize(queenSize);
+        room2.setBedSize(kingSize);
+
+        var criteria = new BedSize("Target", 2.0f, 1.8f);
+
+        customer.bookHotel(hotel, criteria);
+
+        assertFalse(room2.isAvailable(), "La chambre 102 avec le lit King aurait dû être réservée.");
+        assertTrue(room1.isAvailable(), "La chambre 101 avec le lit Queen ne convient pas et doit rester libre.");
+        assertEquals(room2, manager.getAssignments().get(customer));
+    }
+
+    @Test
+    @DisplayName("Forme 5 : bookHotel(Hotel, BedSize) - Doit lever une exception si aucun lit n'est assez grand")
+    void testBookHotelByBedSize_TooLarge() {
+        BedSize smallSize = new BedSize("Small", 1.9f, 1.4f);
+        room1.setBedSize(smallSize);
+        room2.setBedSize(smallSize);
+
+        var giantBed = new BedSize("Giant", 2.0f, 2.2f);
+
+        assertThrows(IllegalStateException.class, () -> customer.bookHotel(hotel, giantBed),
+                "Une exception aurait dû être levée car aucun lit ne fait 2.2m de large.");
+    }
 }
