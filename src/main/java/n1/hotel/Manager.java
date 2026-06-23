@@ -1,4 +1,6 @@
-package main.java.n1.hotel;
+package n1.hotel;
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -6,10 +8,12 @@ import java.util.List;
 import java.util.Map;
 
 public class Manager {
+    @Getter
     private String name;
+    @Getter
     private String employeeId;
     private Map<Integer, Room> rooms;
-    private Map<Client, Room> assignments;
+    private Map<Customer, Room> assignments;
 
     public Manager(String name, String employeeId) {
         setName(name);
@@ -42,14 +46,14 @@ public class Manager {
         System.out.println("[Manager] Room #" + roomNumber + " removed from inventory.");
     }
 
-    public void assignRoom(Client client, int roomNumber) {
+    public void assignRoom(Customer client, int roomNumber) {
         if (client == null) {
             throw new IllegalArgumentException("The client cannot be null.");
         }
         if (assignments.containsKey(client)) {
             Room current = assignments.get(client);
             throw new IllegalStateException(
-                "The client " + client.getName() + " already has the room #" + current.getRoomNumber() + "."
+                "The client " + client.getFullName() + " already has the room #" + current.getRoomNumber() + "."
             );
         }
 
@@ -64,10 +68,10 @@ public class Manager {
         room.setAvailable(false);
         assignments.put(client, room);
         System.out.println("[Manager] Room #" + roomNumber +
-            " assigned to " + client.getName() + ".");
+            " assigned to " + client.getFullName() + ".");
     }
 
-    public void releaseRoom(Client client) {
+    public void releaseRoom(Customer client) {
         if (client == null || !assignments.containsKey(client)) {
             throw new IllegalArgumentException(
                 "This client does not have a room assigned."
@@ -76,29 +80,7 @@ public class Manager {
         Room room = assignments.remove(client);
         room.setAvailable(true);
         System.out.println("[Manager] Room #" + room.getRoomNumber() +
-            " released by " + client.getName() + ".");
-    }
-
-    public List<Room> getAvailableRooms() {
-        List<Room> available = new ArrayList<>();
-        for (Room room : rooms.values()) {
-            if (room.isAvailable()) {
-                available.add(room);
-            }
-        }
-        return Collections.unmodifiableList(available);
-    }
-
-    public void printAvailableRooms() {
-        List<Room> available = getAvailableRooms();
-        if (available.isEmpty()) {
-            System.out.println("[Manager] No available rooms at the moment.");
-            return;
-        }
-        System.out.println("[Manager] Available rooms (" + available.size() + ") :");
-        for (Room room : available) {
-            System.out.println("  - " + room);
-        }
+            " released by " + client.getFullName() + ".");
     }
 
     public double calculateTotalRevenue() {
@@ -107,11 +89,6 @@ public class Manager {
             total += room.getPrice();
         }
         return total;
-    }
-
-    public void printTotalRevenue() {
-        System.out.printf("[Manager] Total revenue (occupied rooms) : %.2f Ar%n",
-            calculateTotalRevenue());
     }
 
     private Room getRoomOrThrow(int roomNumber) {
@@ -124,19 +101,11 @@ public class Manager {
         return room;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public void setName(String name) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("The manager's name cannot be empty.");
         }
         this.name = name.trim();
-    }
-
-    public String getEmployeeId() {
-        return employeeId;
     }
 
     public void setEmployeeId(String employeeId) {
@@ -150,17 +119,7 @@ public class Manager {
         return Collections.unmodifiableMap(rooms);
     }
 
-    public Map<Client, Room> getAssignments() {
+    public Map<Customer, Room> getAssignments() {
         return Collections.unmodifiableMap(assignments);
-    }
-
-    @Override
-    public String toString() {
-        return "Manager{" +
-            "name='" + name + '\'' +
-            ", employeeId='" + employeeId + '\'' +
-            ", totalRooms=" + rooms.size() +
-            ", occupiedRooms=" + assignments.size() +
-            '}';
     }
 }
