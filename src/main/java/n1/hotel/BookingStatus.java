@@ -1,6 +1,6 @@
 package n1.hotel;
 
 public enum BookingStatus {
-        PENDING, CONFIRMED, CANCELED, FINISHED
+        PENDING, CONFIRMED, CANCELED, COMPLETED
 }
 
