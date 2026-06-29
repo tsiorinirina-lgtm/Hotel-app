@@ -14,6 +14,7 @@ public class Booking {
     @NonNull private int id;
     @NonNull private Hotel hotel;
     @NonNull private Room room;
+    @NonNull private Customer customer;
     @NonNull private BookingStatus status;
     @NonNull private int numberPeople;
     @NonNull private LocalDateTime StartDate;
