@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,6 +19,7 @@ public class Customer {
     private String email;
     private String phoneNumber;
     private String address;
+    private List<Booking> bookings = new ArrayList<>();
 
     String getFullName() {
         return firstName + " " + lastName;
@@ -83,6 +85,15 @@ public class Customer {
             throw new IllegalArgumentException("Number of people must be at least 1.");
         }
 
+        boolean hasActiveBooking = bookings.stream()
+                .anyMatch(b -> b.getStatus() == BookingStatus.PENDING
+                            || b.getStatus() == BookingStatus.CONFIRMED);
+
+        if (hasActiveBooking) {
+            throw new IllegalStateException(
+                    "Customer " + getFullName() + " already has an active booking.");
+        }
+
         List<Room> candidates = hotel.getAvailableRooms();
 
         Room chosen = candidates.stream()
@@ -93,7 +104,7 @@ public class Customer {
                 .orElseThrow(() -> new IllegalStateException(
                         "No available room matches the requested criteria in hotel: " + hotel.getName()));
 
-        return new Booking(
+        Booking booking = new Booking(
                 nextBookingId++,
                 hotel,
                 chosen,
@@ -103,5 +114,8 @@ public class Customer {
                 startDate,
                 endDate
         );
+
+        bookings.add(booking);
+        return booking;
     }
 }
