@@ -19,7 +19,7 @@ public class Customer {
     private String email;
     private String phoneNumber;
     private String address;
-    private List<Booking> bookings = new ArrayList<>();
+    private List<Booking> bookings;
 
     String getFullName() {
         return firstName + " " + lastName;

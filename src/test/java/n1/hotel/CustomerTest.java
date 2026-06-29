@@ -21,7 +21,7 @@ class CustomerTest {
 
     @BeforeEach
     void setUp() {
-        customer  = new Customer(1, "Alice", "Dupont", "alice@mail.com", "0600000000", "1 Rue de la Paix");
+        customer  = new Customer(1, "Alice", "Dupont", "alice@mail.com", "0600000000", "1 Rue de la Paix", new ArrayList<>());
         manager   = new Manager("Bob Martin", "EMP-001");
         bedSize   = new BedSize("Queen", 200f, 160f);
         room      = new Room(101, RoomType.DOUBLE, bedSize, 120.0, 2, 1);
