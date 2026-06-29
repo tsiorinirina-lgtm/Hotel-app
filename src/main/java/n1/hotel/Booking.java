@@ -22,7 +22,7 @@ public class Booking {
     private Payment payment;
 
     int getNumberNights() {
-        return (int) ChronoUnit.DAYS.between(StartDate, EndDate);
+        return (int) ChronoUnit.DAYS.between(StartDate.toLocalDate(), EndDate.toLocalDate());
     }
 
     double getTotalPrice() {

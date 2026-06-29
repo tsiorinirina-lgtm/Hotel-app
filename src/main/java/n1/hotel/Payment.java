@@ -31,6 +31,6 @@ boolean isFullyPaid(){
 }
 
 boolean isPartiallyPaid(){
-    return amountPaid < amountCharged && amountPaid > 0g;
+    return amountPaid < amountCharged && amountPaid > 0;
 }
 }
