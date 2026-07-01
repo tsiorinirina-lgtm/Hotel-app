@@ -4,11 +4,14 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @RequiredArgsConstructor
 @Getter
+@Setter
 @EqualsAndHashCode
 
 public class Payment {
@@ -16,7 +19,8 @@ public class Payment {
 @NonNull private PaymentStatus status;
 @NonNull private PaymentMethod paymentMethod;
 @NonNull private LocalDateTime paymentDate;
-
+private Date paymentDateTime;
+private double amount;
 @NonNull private double amountPaid;
 @NonNull private double amountCharged;
 private double amountDue = amountCharged;

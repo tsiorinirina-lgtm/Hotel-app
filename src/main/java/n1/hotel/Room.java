@@ -6,6 +6,7 @@ import lombok.ToString;
 
 @ToString
 @Getter
+@Setter
 public class Room {
     public RoomType type;
     private int roomNumber;
@@ -16,6 +17,7 @@ public class Room {
     private boolean available;
     private int capacity;
     private int floor;
+    private RoomStatus status;
 
     public Room(int roomNumber, RoomType roomType, BedSize bedSize, double price, int capacity, int floor) {
         this.roomNumber = roomNumber;
