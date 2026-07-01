@@ -25,23 +25,23 @@ public class Reservation {
 
     // ─── Attributs ──────────────────────────────────────────────────
     private final String idReservation;
-    private final Client client;        
-    private Manager manager;            
+    private final Customer customer;
+    private Manager manager;
     private TypeChambre typeChambre;
     private LocalDate dateArrivee;
     private LocalDate dateDepart;
     private int nombrePersonnes;
     private StatutReservation statut;
-    private Paiement paiement;             
+    private Paiement paiement;
 
-    public Reservation(Client client, TypeChambre typeChambre,
-                       LocalDate dateArrivee, LocalDate dateDepart,
-                       int nombrePersonnes) {
+    public Reservation(Customer customer, TypeChambre typeChambre,
+        LocalDate dateArrivee, LocalDate dateDepart,
+        int nombrePersonnes) {
         validerDates(dateArrivee, dateDepart);
         if (nombrePersonnes <= 0) throw new IllegalArgumentException("Nombre de personnes invalide.");
 
         this.idReservation  = "RES-" + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
-        this.client         = client;
+        this.customer         = customer;
         this.typeChambre    = typeChambre;
         this.dateArrivee    = dateArrivee;
         this.dateDepart     = dateDepart;
@@ -121,7 +121,7 @@ public class Reservation {
     }
 
     public String getIdReservation()        { return idReservation; }
-    public Client getClient()               { return client; }
+    public Customer getCustomer()               { return customer; }
     public Manager getManager()             { return manager; }
     public TypeChambre getTypeChambre()     { return typeChambre; }
     public LocalDate getDateArrivee()       { return dateArrivee; }
@@ -142,7 +142,7 @@ public class Reservation {
         return String.format(
             "Reservation[id=%s | client=%s | chambre=%s | %s→%s (%d nuits) | %d pers. | statut=%s | montant=%.2f€ | paiement=%s]",
             idReservation,
-            client != null ? client.getNom() : "—",  
+            customer != null ? customer.getFullName() : "—",  
             typeChambre, dateArrivee, dateDepart,
             getNombreNuits(), nombrePersonnes, statut,
             calculerMontantTotal(),
