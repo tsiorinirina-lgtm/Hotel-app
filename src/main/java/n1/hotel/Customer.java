@@ -4,12 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @AllArgsConstructor
 @Getter
 @Setter
-
 public class Customer {
     private int id;
     private String firstName;
@@ -17,51 +19,103 @@ public class Customer {
     private String email;
     private String phoneNumber;
     private String address;
+    private List<Booking> bookings;
 
     String getFullName() {
         return firstName + " " + lastName;
     }
 
-    void bookHotel(Hotel hotel) {
-        if (hotel == null) {
-            throw new IllegalArgumentException("L'hôtel ne peut pas être null.");
+    public Payment pay(double amountCharged, double amountPaid, PaymentMethod paymentMethod) {
+        if (amountCharged <= 0) {
+            throw new IllegalArgumentException("Amount charged must be positive.");
         }
-        ArrayList<Room> availableRooms = hotel.getAvailableRooms();
-        if (availableRooms.isEmpty()) {
-            throw new IllegalStateException("Désolé, aucune chambre n'est disponible dans cet hôtel.");
+        if (amountPaid < 0) {
+            throw new IllegalArgumentException("Amount paid cannot be negative.");
         }
-        Room roomToBook = availableRooms.getFirst();
-        hotel.getManager().assignRoom(this, roomToBook.getRoomNumber());
+
+        PaymentStatus status;
+        if (amountPaid >= amountCharged) {
+            status = PaymentStatus.PAID;
+        } else if (amountPaid > 0) {
+            status = PaymentStatus.PENDING;
+        } else {
+            status = PaymentStatus.FAILED;
+        }
+
+        return new Payment(
+                UUID.randomUUID().toString(),
+                status,
+                paymentMethod,
+                LocalDateTime.now(),
+                amountPaid,
+                amountCharged
+        );
     }
 
-    void bookHotel(Hotel hotel, int roomNumber) {
-        if (hotel == null) {
-            throw new IllegalArgumentException("L'hôtel ne peut pas être null.");
-        }
-        hotel.getManager().assignRoom(this, roomNumber);
+    private static int nextBookingId = 1;
+
+    public Booking book(Hotel hotel, LocalDateTime startDate, LocalDateTime endDate) {
+        return bookInternal(hotel, -1, 1, null, startDate, endDate);
     }
 
-    public void bookHotel(Hotel hotel, RoomType roomType) {
+    public Booking book(Hotel hotel, double maxPrice, LocalDateTime startDate, LocalDateTime endDate) {
+        return bookInternal(hotel, maxPrice, 1, null, startDate, endDate);
+    }
+
+    public Booking book(Hotel hotel, int numberOfPeople, LocalDateTime startDate, LocalDateTime endDate) {
+        return bookInternal(hotel, -1, numberOfPeople, null, startDate, endDate);
+    }
+
+    public Booking book(Hotel hotel, BedSize bedSize, LocalDateTime startDate, LocalDateTime endDate) {
+        return bookInternal(hotel, -1, 1, bedSize, startDate, endDate);
+    }
+
+    private Booking bookInternal(Hotel hotel, double maxPrice, int numberOfPeople,
+                                  BedSize bedSize, LocalDateTime startDate, LocalDateTime endDate) {
         if (hotel == null) {
-            throw new IllegalArgumentException("L'hôtel ne peut pas être null.");
+            throw new IllegalArgumentException("Hotel cannot be null.");
         }
-        Room roomToBook = hotel.getAvailableRooms().stream()
-                .filter(room -> room.getType() == roomType)
+        if (startDate == null || endDate == null) {
+            throw new IllegalArgumentException("Start and end dates cannot be null.");
+        }
+        if (!endDate.isAfter(startDate)) {
+            throw new IllegalArgumentException("End date must be after start date.");
+        }
+        if (numberOfPeople < 1) {
+            throw new IllegalArgumentException("Number of people must be at least 1.");
+        }
+
+        boolean hasActiveBooking = bookings.stream()
+                .anyMatch(b -> b.getStatus() == BookingStatus.PENDING
+                            || b.getStatus() == BookingStatus.CONFIRMED);
+
+        if (hasActiveBooking) {
+            throw new IllegalStateException(
+                    "Customer " + getFullName() + " already has an active booking.");
+        }
+
+        List<Room> candidates = hotel.getAvailableRooms();
+
+        Room chosen = candidates.stream()
+                .filter(r -> r.getCapacity() >= numberOfPeople)
+                .filter(r -> maxPrice < 0 || r.getPrice() <= maxPrice)
+                .filter(r -> bedSize == null || r.getBedSize().equals(bedSize))
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Aucune chambre disponible pour le type : " + roomType));
+                .orElseThrow(() -> new IllegalStateException(
+                        "No available room matches the requested criteria in hotel: " + hotel.getName()));
 
-        hotel.getManager().assignRoom(this, roomToBook.getRoomNumber());
-    }
+        Booking booking = new Booking(
+                nextBookingId++,
+                hotel,
+                chosen,
+                this,
+                BookingStatus.PENDING,
+                numberOfPeople,
+                startDate,
+                endDate
+        );
 
-    public void bookHotel(Hotel hotel, double maxPrice) {
-        if (hotel == null) {
-            throw new IllegalArgumentException("L'hôtel ne peut pas être null.");
-        }
-        Room roomToBook = hotel.getAvailableRooms().stream()
-                .filter(room -> room.getPrice() <= maxPrice)
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Aucune chambre disponible en dessous ou égale au prix de : " + maxPrice + "€"));
-
-        hotel.getManager().assignRoom(this, roomToBook.getRoomNumber());
+        bookings.add(booking);
+        return booking;
     }
 }
