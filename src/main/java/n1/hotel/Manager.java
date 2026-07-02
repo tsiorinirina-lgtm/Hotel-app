@@ -39,7 +39,7 @@ public class Manager {
 
     public void removeRoom(int roomNumber) {
         Room room = getRoomOrThrow(roomNumber);
-        if (!room.isAvailable()) {
+        if (room.getStatus() != RoomStatus.AVAILABLE) {
             throw new IllegalStateException(
                     "Impossible to delete the room " + roomNumber + ", it is currently occupied!");
         }
@@ -85,7 +85,7 @@ public class Manager {
         return this.bookings.values().stream().filter(b -> filterDate == null || filterDate.equals(b.getBookingDate()))
                 .filter(b -> filterStatus == null || b.getStatus() == filterStatus)
                 .filter(b -> filterCustomerName == null ||
-                        (b.getCustomerName() != null && b.getCustomerName().equalsIgnoreCase(filterCustomerName)))
+                        (b.getCustomer().getFullName() != null && b.getCustomer().getFullName().equalsIgnoreCase(filterCustomerName)))
                 .collect(Collectors.toList());
     }
 
