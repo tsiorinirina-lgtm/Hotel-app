@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -17,6 +18,7 @@ public class Hotel {
     private String address;
     private Manager manager;
     private String email;
+    private ArrayList<Booking> bookings;
     private ArrayList<Room> rooms;
 
     ArrayList<Room> getAvailableRooms() {
